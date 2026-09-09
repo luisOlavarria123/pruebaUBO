@@ -1,0 +1,29 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: #1c2430;
+  color: #fff;
+}
+
+.brand {
+  font-weight: 600;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-right a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.user {
+  font-size: 0.85rem;
+  color: #c4cad4;
+}

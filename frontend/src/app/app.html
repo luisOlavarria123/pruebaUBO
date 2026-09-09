@@ -1,0 +1,17 @@
+@if (auth.isAuthenticated()) {
+  <nav class="navbar">
+    <span class="brand">Sistema de Solicitudes</span>
+    <div class="nav-right">
+      <a routerLink="/solicitudes">Solicitudes</a>
+      @if (auth.currentUser()?.role === 'revisor') {
+        <a routerLink="/categorias">Categorias</a>
+      }
+      @if (auth.currentUser(); as user) {
+        <span class="user">{{ user.name }} ({{ user.role }})</span>
+      }
+      <button type="button" class="btn btn-secondary" (click)="logout()">Cerrar sesion</button>
+    </div>
+  </nav>
+}
+
+<router-outlet />

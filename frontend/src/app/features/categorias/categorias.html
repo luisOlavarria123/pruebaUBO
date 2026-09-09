@@ -1,0 +1,59 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Categorias</h1>
+  </header>
+
+  <form class="filters" [formGroup]="createForm" (ngSubmit)="create()" novalidate>
+    <label>
+      Nueva categoria
+      <input
+        type="text"
+        formControlName="nombre"
+        placeholder="Nombre"
+        [class.invalid]="createForm.controls.nombre.invalid && createForm.controls.nombre.touched"
+      />
+    </label>
+    <button type="submit" class="btn btn-primary" [disabled]="saving()" style="align-self: flex-end;">
+      {{ saving() ? 'Creando...' : 'Crear' }}
+    </button>
+  </form>
+
+  @if (errorMessage()) {
+    <div class="alert alert-error" role="alert">{{ errorMessage() }}</div>
+  }
+  @if (rowError()) {
+    <div class="alert alert-error" role="alert">{{ rowError() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="status">Cargando...</p>
+  } @else {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (categoria of categorias(); track categoria.id) {
+          <tr>
+            <td>{{ categoria.nombre }}</td>
+            <td>
+              <span class="badge" [class]="categoria.activa ? 'badge-aprobada' : 'badge-rechazada'">
+                {{ categoria.activa ? 'activa' : 'inactiva' }}
+              </span>
+            </td>
+            <td>
+              <button type="button" class="btn btn-secondary" (click)="toggleActiva(categoria)">
+                {{ categoria.activa ? 'Desactivar' : 'Activar' }}
+              </button>
+              <button type="button" class="btn btn-danger" (click)="remove(categoria)">Eliminar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

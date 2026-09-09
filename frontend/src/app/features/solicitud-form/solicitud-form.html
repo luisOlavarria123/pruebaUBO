@@ -1,0 +1,86 @@
+<div class="page">
+  <header class="page-header">
+    <h1>{{ isEdit ? 'Editar solicitud' : 'Nueva solicitud' }}</h1>
+    <a class="btn btn-secondary" routerLink="/solicitudes">Volver</a>
+  </header>
+
+  @if (loadingInicial()) {
+    <p class="status">Cargando...</p>
+  } @else {
+    <form class="form-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (errorMessage()) {
+        <div class="alert alert-error" role="alert">{{ errorMessage() }}</div>
+      }
+
+      <label for="categoria_id">Categoria</label>
+      <select
+        id="categoria_id"
+        formControlName="categoria_id"
+        [class.invalid]="form.controls.categoria_id.invalid && form.controls.categoria_id.touched"
+      >
+        <option value="" disabled>Selecciona una categoria</option>
+        @for (categoria of categorias(); track categoria.id) {
+          <option [value]="categoria.id" [disabled]="!categoria.activa">
+            {{ categoria.nombre }}{{ categoria.activa ? '' : ' (inactiva)' }}
+          </option>
+        }
+      </select>
+      @if (form.controls.categoria_id.invalid && form.controls.categoria_id.touched) {
+        <span class="field-error">Selecciona una categoria.</span>
+      }
+
+      <label for="tipo">Tipo</label>
+      <select
+        id="tipo"
+        formControlName="tipo"
+        [class.invalid]="form.controls.tipo.invalid && form.controls.tipo.touched"
+      >
+        <option value="" disabled>Selecciona un tipo</option>
+        <option value="incidente">Incidente</option>
+        <option value="consulta">Consulta</option>
+        <option value="mejora">Mejora</option>
+      </select>
+      @if (form.controls.tipo.invalid && form.controls.tipo.touched) {
+        <span class="field-error">Selecciona un tipo.</span>
+      }
+
+      @if (form.controls.tipo.value === 'incidente') {
+        <label for="urgencia">Urgencia</label>
+        <select
+          id="urgencia"
+          formControlName="urgencia"
+          [class.invalid]="form.controls.urgencia.invalid && form.controls.urgencia.touched"
+        >
+          <option value="" disabled>Selecciona la urgencia</option>
+          @for (urgencia of urgencias; track urgencia) {
+            <option [value]="urgencia">{{ urgencia }}</option>
+          }
+        </select>
+        @if (form.controls.urgencia.invalid && form.controls.urgencia.touched) {
+          <span class="field-error">
+            {{ form.controls.urgencia.errors?.['server'] || 'La urgencia es obligatoria para un incidente.' }}
+          </span>
+        }
+      }
+
+      <label for="descripcion">Descripcion</label>
+      <textarea
+        id="descripcion"
+        rows="4"
+        formControlName="descripcion"
+        [class.invalid]="form.controls.descripcion.invalid && form.controls.descripcion.touched"
+      ></textarea>
+      @if (form.controls.descripcion.invalid && form.controls.descripcion.touched) {
+        <span class="field-error">
+          {{ form.controls.descripcion.errors?.['server'] || 'La descripcion es obligatoria (maximo 2000 caracteres).' }}
+        </span>
+      }
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="loading()">
+          {{ loading() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

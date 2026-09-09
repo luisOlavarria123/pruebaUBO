@@ -1,0 +1,78 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Solicitud</h1>
+    <a class="btn btn-secondary" routerLink="/solicitudes">Volver</a>
+  </header>
+
+  @if (loading()) {
+    <p class="status">Cargando...</p>
+  } @else if (errorMessage()) {
+    <div class="alert alert-error" role="alert">{{ errorMessage() }}</div>
+  } @else if (solicitud(); as s) {
+    <div class="detail-grid">
+      @if (actionError()) {
+        <div class="alert alert-error" role="alert">{{ actionError() }}</div>
+      }
+
+      <dl>
+        <div class="detail-row">
+          <dt>Estado</dt>
+          <dd><span class="badge" [class]="'badge-' + s.estado">{{ s.estado }}</span></dd>
+        </div>
+        <div class="detail-row">
+          <dt>Tipo</dt>
+          <dd>{{ s.tipo }}</dd>
+        </div>
+        <div class="detail-row">
+          <dt>Categoria</dt>
+          <dd>{{ s.categoria?.nombre }}{{ s.categoria?.activa ? '' : ' (inactiva)' }}</dd>
+        </div>
+        <div class="detail-row">
+          <dt>Descripcion</dt>
+          <dd>{{ s.descripcion }}</dd>
+        </div>
+        @if (s.tipo === 'incidente') {
+          <div class="detail-row">
+            <dt>Urgencia</dt>
+            <dd>{{ s.campos_adicionales?.['urgencia'] || '(sin definir)' }}</dd>
+          </div>
+        }
+        @if (auth.currentUser()?.role === 'revisor') {
+          <div class="detail-row">
+            <dt>Solicitante</dt>
+            <dd>{{ s.solicitante?.name }} ({{ s.solicitante?.email }})</dd>
+          </div>
+        }
+        <div class="detail-row">
+          <dt>Creada</dt>
+          <dd>{{ s.created_at | date: 'short' }}</dd>
+        </div>
+      </dl>
+
+      <div class="form-actions">
+        @if (canEdit()) {
+          <a class="btn btn-secondary" [routerLink]="['/solicitudes', s.id, 'editar']">Editar</a>
+        }
+
+        @if (canChangeEstado()) {
+          @for (siguiente of s.estados_siguientes; track siguiente) {
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="actionLoading()"
+              (click)="changeEstado(siguiente)"
+            >
+              Marcar como {{ siguiente }}
+            </button>
+          }
+        }
+
+        @if (canDelete()) {
+          <button type="button" class="btn btn-danger" [disabled]="actionLoading()" (click)="remove()">
+            Eliminar
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>

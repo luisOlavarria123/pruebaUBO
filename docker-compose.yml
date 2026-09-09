@@ -1,0 +1,58 @@
+services:
+  db:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: solicitudes
+      MYSQL_USER: solicitudes
+      MYSQL_PASSWORD: solicitudes
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      APP_NAME: "Sistema de Solicitudes"
+      APP_ENV: local
+      APP_KEY: "base64:eI/zN9aDKfM66t6nEkda/yVHKLaDc6eUl3fn4vM2Y+g="
+      APP_DEBUG: "true"
+      APP_URL: "http://localhost:8000"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: solicitudes
+      DB_USERNAME: solicitudes
+      DB_PASSWORD: solicitudes
+      SESSION_DRIVER: array
+      CACHE_STORE: database
+      QUEUE_CONNECTION: sync
+      JWT_SECRET: "GB4XdOvo69MQ6FYpVXEQZABONLIP58FC7z2DDTwpf0HzMA74Hzwmd7MKJ63hnHbl"
+      JWT_TTL: 60
+      FRONTEND_URL: "http://localhost:4200"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
